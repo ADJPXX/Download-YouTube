@@ -67,9 +67,9 @@ def baixarmp4(LINK):
 		RESOLUCAO_ESCOLHIDA = escolherresolucao(RESOLUCOES)
 
 		YT_VIDEO = YT.streams.filter(only_video=True, mime_type="video/mp4", res=f"{RESOLUCAO_ESCOLHIDA}").order_by('bitrate').desc().first()
-		YT_AUDIO = YT.streams.filter(only_audio=True, mime_type="audio/mp4").order_by('bitrate').desc().first()
+		YT_AUDIO = YT.streams.filter(only_audio=True, mime_type="audio/mp4").order_by('abr').desc().first()
 
-		print(f"RESOLUÇÃO ESCOLHIDA PARA DOWNLOAD {RESOLUCAO_ESCOLHIDA}")
+		print(f"PREPARANDO O DOWNLOAD\nRESOLUÇÃO ESCOLHIDA PARA DOWNLOAD {RESOLUCAO_ESCOLHIDA}")
 
 		VIDEO_FILE = YT_VIDEO.download(PATH, filename="video.mp4")
 		AUDIO_FILE = YT_AUDIO.download(PATH, filename="audio.mp4")
@@ -117,7 +117,7 @@ def baixarmp3(LINK):
 
 def main():
 	while True:
-		op = lerint("O QUE VOCÊ DESEJA?\n[ 1 ]BAIXAR MP3 (APENAS ÁUDIO)\n[ 2 ]BAIXAR MP4 (ÁUDIO E VÍDEO --- APENAS A RESOLUÇÃO 360p ESTÁ DISPONÍVEL)\n[ 0 ]SAIR\nSUA ESCOLHA: ")
+		op = lerint("O QUE VOCÊ DESEJA?\n[ 1 ]BAIXAR MP3 (APENAS ÁUDIO)\n[ 2 ]BAIXAR MP4 (ÁUDIO E VÍDEO)\n[ 0 ]SAIR\nSUA ESCOLHA: ")
 		if op == 0:
 			clear()
 			print("OBRIGADO POR O PROGRAMA")
