@@ -202,7 +202,6 @@ def main():
 		import pytubefix as pytubefix # pip install pytubefix
 		import ffmpeg as ffmpeg # pip install ffmpeg-python
 
-		global CAMINHO_USUARIO
 		global pytubefix
 		global ffmpeg
 
