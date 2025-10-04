@@ -160,12 +160,9 @@ def removercaracteresinvalidos(nome):
 	return TITULO
 
 
-def baixarmp3(LINK):
+def baixarmp3(LINK, op):
 	import os
-	clear()
 
-	print('DIGITE "S" PARA SIM OU "N" PARA NÃO\nSE VOCÊ NÃO QUISER COLOCAR, O DIRETORIO PADRÃO É NA PASTA DOWNLOADS DO WINDOWS\n')
-	op = lerstr("VOCÊ QUER COLOCAR O DIRETORIO PARA FAZER O DOWNLOAD? ").strip().upper()
 	clear()
 	if op == 'S':
 		try:
@@ -192,57 +189,190 @@ def baixarmp3(LINK):
 			print(f"OCORREU UM ERRO! TENTE NOVAMENTE {str(e)}")
 
 
-def main():
+def baixarplaylistmp3(LINK):
+	import os
+	import time
 	try:
-		import libs
+		DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "Downloads")
+		YT = pytubefix.YouTube(LINK)
+		AUDIO = YT.streams.filter(only_audio=True).order_by('abr').desc().first()
+		AUDIO.download(DEFAULT_PATH, filename=f"{YT.title}_.mp3")
 
-		libs.verificar_pacotes("pytubefix")
-		libs.verificar_pacotes("ffmpeg-python")
+		time.sleep(0.5)
 
-		import pytubefix as pytubefix # pip install pytubefix
-		import ffmpeg as ffmpeg # pip install ffmpeg-python
-
-		global pytubefix
-		global ffmpeg
-
-		while True:
-			clear()
-			op = lerint("O QUE VOCÊ DESEJA?\n[ 1 ]BAIXAR MP3 (APENAS ÁUDIO)\n[ 2 ]BAIXAR MP4 (ÁUDIO E VÍDEO)\n[ 0 ]SAIR\nSUA ESCOLHA: ")
-			clear()
-			if op == 0:
-				clear()
-				print("OBRIGADO POR USAR O PROGRAMA")
-				break
-
-			elif op == 1:
-				while True:
-					print("DIGITE 'SAIR' PARA PARAR O PROGRAMA")
-					LINK = lerstr("DIGITE O LINK DO VÍDEO QUE VOCÊ QUER BAIXAR: ").strip()
-					clear()
-					if LINK == "sair" or LINK == "SAIR" or LINK == "Sair":
-						break
-					if "youtube.com" in LINK or "youtu.be" in LINK:
-						clear()
-						baixarmp3(LINK)
-
-			elif op == 2:
-				clear()
-				while True:
-					print("DIGITE 'SAIR' PARA PARAR O PROGRAMA")
-					LINK = lerstr("DIGITE O LINK DO VÍDEO QUE VOCÊ QUER BAIXAR: ").strip()
-					clear()
-					if LINK == "sair" or LINK == "SAIR" or LINK == "Sair":
-						break
-
-					if "youtube.com" in LINK or "youtu.be" in LINK:
-						clear()
-						baixarmp4(LINK)
+		print("DOWNLOAD COMPLETO.")
 
 	except Exception as e:
-		print(f"ERRO: {e}")
+		print(f"OCORREU UM ERRO! TENTE NOVAMENTE {str(e)}")
 
+
+def baixarplaylistmp4(LINK, op):
+	if op == 'S':
+		try:
+			import os
+			import time
+			YT = pytubefix.YouTube(LINK)
+
+			USER_PATH = lerstr("COLOQUE O DIRETORIO QUE VOCÊ QUER BAIXAR: ").strip()
+
+			PATH = USER_PATH
+
+			RESOLUCOES = listaresolucoes(YT)
+			RESOLUCAO_ESCOLHIDA = escolherresolucao(RESOLUCOES)
+
+			YT_VIDEO = YT.streams.filter(only_video=True, mime_type="video/mp4", res=f"{RESOLUCAO_ESCOLHIDA}").order_by(
+				'bitrate').desc().first()
+
+			if YT_VIDEO is None:
+				YT_VIDEO = YT.streams.filter(only_video=True, res=RESOLUCAO_ESCOLHIDA).order_by(
+					'bitrate').desc().first()
+
+			if YT_VIDEO is None:
+				print(f"Nenhum stream de vídeo disponível na resolução {RESOLUCAO_ESCOLHIDA}")
+
+			YT_AUDIO = YT.streams.filter(only_audio=True, mime_type="audio/mp4").order_by('abr').desc().first()
+
+			clear()
+
+			print(f"PREPARANDO O DOWNLOAD\nRESOLUÇÃO ESCOLHIDA PARA DOWNLOAD {RESOLUCAO_ESCOLHIDA}")
+
+			VIDEO_FILE = YT_VIDEO.download(PATH, filename="video.mp4")
+			AUDIO_FILE = YT_AUDIO.download(PATH, filename="audio.mp4")
+
+			NOVO_TITULO = removercaracteresinvalidos(YT.title)
+
+			video_input = ffmpeg.input(VIDEO_FILE)
+			audio_input = ffmpeg.input(AUDIO_FILE)
+			output_file = f"{PATH}/{NOVO_TITULO}.mp4"
+
+			ffmpeg.output(video_input, audio_input, output_file, vcodec='hevc_nvenc', acodec='aac', preset='p7',
+						  strict='experimental').run(overwrite_output=True)
+
+			clear()
+
+			print("DOWNLOAD COMPLETO.\n")
+
+			os.remove(f"{PATH}/video.mp4")
+			os.remove(f"{PATH}/audio.mp4")
+
+		except Exception as e:
+			print(f"OCORREU UM ERRO! TENTE NOVAMENTE {str(e)}")
 	else:
-		pass
+		try:
+			import os
+			import time
+			YT = pytubefix.YouTube(LINK)
+
+			DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "Downloads")
+
+			RESOLUCOES = listaresolucoes(YT)
+			RESOLUCAO_ESCOLHIDA = escolherresolucao(RESOLUCOES)
+
+			YT_VIDEO = YT.streams.filter(only_video=True, mime_type="video/mp4", res=f"{RESOLUCAO_ESCOLHIDA}").order_by(
+				'bitrate').desc().first()
+
+			if YT_VIDEO is None:
+				YT_VIDEO = YT.streams.filter(only_video=True, res=RESOLUCAO_ESCOLHIDA).order_by(
+					'bitrate').desc().first()
+
+			if YT_VIDEO is None:
+				print(f"Nenhum stream de vídeo disponível na resolução {RESOLUCAO_ESCOLHIDA}")
+
+			YT_AUDIO = YT.streams.filter(only_audio=True, mime_type="audio/mp4").order_by('abr').desc().first()
+
+			clear()
+
+			print(f"PREPARANDO O DOWNLOAD\nRESOLUÇÃO ESCOLHIDA PARA DOWNLOAD {RESOLUCAO_ESCOLHIDA}")
+
+			VIDEO_FILE = YT_VIDEO.download(DEFAULT_PATH, filename="video.mp4")
+			AUDIO_FILE = YT_AUDIO.download(DEFAULT_PATH, filename="audio.mp4")
+
+			NOVO_TITULO = removercaracteresinvalidos(YT.title)
+
+			video_input = ffmpeg.input(VIDEO_FILE)
+			audio_input = ffmpeg.input(AUDIO_FILE)
+			output_file = f"{DEFAULT_PATH}/{NOVO_TITULO}.mp4"
+
+			ffmpeg.output(video_input, audio_input, output_file, vcodec='hevc_nvenc', acodec='aac', preset='p7',
+						  strict='experimental').run(overwrite_output=True)
+
+			clear()
+
+			print("DOWNLOAD COMPLETO.\n")
+
+			os.remove(f"{DEFAULT_PATH}/video.mp4")
+			os.remove(f"{DEFAULT_PATH}/audio.mp4")
+
+		except Exception as e:
+			print(f"OCORREU UM ERRO! TENTE NOVAMENTE {str(e)}")
+
+
+def main():
+	while True:
+		try:
+			import libs
+
+			libs.verificar_pacotes("pytubefix")
+			libs.verificar_pacotes("ffmpeg-python")
+
+			import pytubefix as pytubefix # pip install pytubefix
+			from pytubefix import Youtube as YouTube
+			import ffmpeg as ffmpeg # pip install ffmpeg-python
+
+			global pytubefix
+			global YouTube
+			global ffmpeg
+
+			while True:
+				clear()
+				op = lerint("O QUE VOCÊ DESEJA?\n[ 1 ]BAIXAR MP3 (APENAS ÁUDIO)\n[ 2 ]BAIXAR MP4 (ÁUDIO E VÍDEO)\n[ 0 ]SAIR\nSUA ESCOLHA: ")
+				clear()
+				if op == 0:
+					clear()
+					print("OBRIGADO POR USAR O PROGRAMA")
+					break
+
+				elif op == 1:
+					clear()
+					while True:
+						print("DIGITE 'SAIR' PARA PARAR O PROGRAMA")
+						LINK = lerstr("DIGITE O LINK DO VÍDEO, SHORTS OU PLAYLIST QUE VOCÊ QUER BAIXAR: ").strip()
+
+						clear()
+						if LINK == "sair" or LINK == "SAIR" or LINK == "Sair":
+							break
+
+						print('DIGITE "S" PARA SIM OU "N" PARA NÃO\nSE VOCÊ NÃO QUISER COLOCAR, O DIRETORIO PADRÃO É NA PASTA DOWNLOADS DO WINDOWS\n')
+						op = lerstr("VOCÊ QUER COLOCAR O DIRETORIO PARA FAZER O DOWNLOAD? ").strip().upper()
+
+						if "playlist" in LINK:
+							PLAYLIST = pytubefix.Playlist(LINK)
+							print(f"Playlist encontrada: {PLAYLIST.title}")
+							for video in PLAYLIST.videos:
+								baixarplaylistmp3(video.watch_url)
+
+						if "youtube.com" in LINK or "youtu.be" in LINK:
+							clear()
+							baixarmp3(LINK, op)
+
+				elif op == 2:
+					clear()
+					while True:
+						print("DIGITE 'SAIR' PARA PARAR O PROGRAMA")
+						LINK = lerstr("DIGITE O LINK DO VÍDEO, SHORTS, PLAYLIST QUE VOCÊ QUER BAIXAR: ").strip()
+						clear()
+						if LINK == "sair" or LINK == "SAIR" or LINK == "Sair":
+							break
+
+						if "youtube.com" in LINK or "youtu.be" in LINK:
+							clear()
+							baixarmp4(LINK)
+
+		except Exception as e:
+			print(f"ERRO: {e}")
+
+		else:
+			pass
 
 
 if __name__ == "__main__":
