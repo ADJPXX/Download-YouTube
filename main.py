@@ -222,7 +222,7 @@ def main():
 					clear()
 					if LINK == "sair" or LINK == "SAIR" or LINK == "Sair":
 						break
-					if "youtube.com" in LINK:
+					if "youtube.com" in LINK or "youtu.be" in LINK:
 						clear()
 						baixarmp3(LINK)
 
@@ -235,7 +235,7 @@ def main():
 					if LINK == "sair" or LINK == "SAIR" or LINK == "Sair":
 						break
 
-					if "youtube.com" in LINK:
+					if "youtube.com" in LINK or "youtu.be" in LINK:
 						clear()
 						baixarmp4(LINK)
 
