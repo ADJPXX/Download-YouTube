@@ -49,18 +49,13 @@ def escolherresolucao(opcoesderes):
 			print("Escolha uma opção correta.")
 
 
-def baixarmp4(LINK):
-
-	print('DIGITE "S" PARA SIM OU "N" PARA NÃO\nSE VOCÊ NÃO QUISER COLOCAR, O DIRETORIO PADRÃO É NA PASTA DOWNLOADS DO WINDOWS\n')
-	op = lerstr("VOCÊ QUER COLOCAR O DIRETORIO PARA FAZER O DOWNLOAD? ").strip().upper()
+def baixarmp4(LINK, op, USER_PATH=''):
 	clear()
 	if op == 'S':
 		try:
 			import os
 			import time
-			YT = pytubefix.YouTube(LINK)
-
-			USER_PATH = lerstr("COLOQUE O DIRETORIO QUE VOCÊ QUER BAIXAR: ").strip()
+			YT = YouTube(LINK)
 
 			PATH = USER_PATH
 
@@ -109,7 +104,7 @@ def baixarmp4(LINK):
 		try:
 			import os
 			import time
-			YT = pytubefix.YouTube(LINK)
+			YT = YouTube(LINK)
 
 			DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "Downloads")
 
@@ -160,15 +155,14 @@ def removercaracteresinvalidos(nome):
 	return TITULO
 
 
-def baixarmp3(LINK, op):
+def baixarmp3(LINK, op, USER_PATH=''):
 	import os
 
 	clear()
 	if op == 'S':
 		try:
-			USER_PATH = lerstr("COLOQUE O DIRETORIO QUE VOCÊ QUER BAIXAR: ").strip()
 			PATH = USER_PATH
-			YT = pytubefix.YouTube(LINK)
+			YT = YouTube(LINK)
 			AUDIO = YT.streams.filter(only_audio=True).order_by('abr').desc().first()
 			AUDIO.download(PATH, filename=f"{YT.title}.mp3")
 
@@ -179,7 +173,7 @@ def baixarmp3(LINK, op):
 	else:
 		try:
 			DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "Downloads")
-			YT = pytubefix.YouTube(LINK)
+			YT = YouTube(LINK)
 			AUDIO = YT.streams.filter(only_audio=True).order_by('abr').desc().first()
 			AUDIO.download(DEFAULT_PATH, filename=f"{YT.title}.mp3")
 
@@ -189,31 +183,38 @@ def baixarmp3(LINK, op):
 			print(f"OCORREU UM ERRO! TENTE NOVAMENTE {str(e)}")
 
 
-def baixarplaylistmp3(LINK):
+def baixarplaylistmp3(LINK, op, USER_PATH=''):
 	import os
-	import time
-	try:
-		DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "Downloads")
-		YT = pytubefix.YouTube(LINK)
-		AUDIO = YT.streams.filter(only_audio=True).order_by('abr').desc().first()
-		AUDIO.download(DEFAULT_PATH, filename=f"{YT.title}_.mp3")
+	if op == 'S':
+		try:
+			PATH = USER_PATH
+			YT = YouTube(LINK)
+			AUDIO = YT.streams.filter(only_audio=True).order_by('abr').desc().first()
+			AUDIO.download(PATH, filename=f"{YT.title}_.mp3")
 
-		time.sleep(0.5)
+			print("DOWNLOAD COMPLETO.")
 
-		print("DOWNLOAD COMPLETO.")
+		except Exception as e:
+			print(f"OCORREU UM ERRO! TENTE NOVAMENTE {str(e)}")
+	else:
+		try:
+			DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "Downloads")
+			YT = YouTube(LINK)
+			AUDIO = YT.streams.filter(only_audio=True).order_by('abr').desc().first()
+			AUDIO.download(DEFAULT_PATH, filename=f"{YT.title}_.mp3")
 
-	except Exception as e:
-		print(f"OCORREU UM ERRO! TENTE NOVAMENTE {str(e)}")
+			print("DOWNLOAD COMPLETO.")
+
+		except Exception as e:
+			print(f"OCORREU UM ERRO! TENTE NOVAMENTE {str(e)}")
 
 
-def baixarplaylistmp4(LINK, op):
+def baixarplaylistmp4(LINK, op, USER_PATH=''):
 	if op == 'S':
 		try:
 			import os
 			import time
-			YT = pytubefix.YouTube(LINK)
-
-			USER_PATH = lerstr("COLOQUE O DIRETORIO QUE VOCÊ QUER BAIXAR: ").strip()
+			YT = YouTube(LINK)
 
 			PATH = USER_PATH
 
@@ -261,7 +262,7 @@ def baixarplaylistmp4(LINK, op):
 		try:
 			import os
 			import time
-			YT = pytubefix.YouTube(LINK)
+			YT = YouTube(LINK)
 
 			DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "Downloads")
 
@@ -308,6 +309,8 @@ def baixarplaylistmp4(LINK, op):
 
 
 def main():
+	USER_PATH = ''
+
 	while True:
 		try:
 			import libs
@@ -316,7 +319,7 @@ def main():
 			libs.verificar_pacotes("ffmpeg-python")
 
 			import pytubefix as pytubefix # pip install pytubefix
-			from pytubefix import Youtube as YouTube
+			from pytubefix import YouTube as YouTube
 			import ffmpeg as ffmpeg # pip install ffmpeg-python
 
 			global pytubefix
@@ -344,16 +347,18 @@ def main():
 
 						print('DIGITE "S" PARA SIM OU "N" PARA NÃO\nSE VOCÊ NÃO QUISER COLOCAR, O DIRETORIO PADRÃO É NA PASTA DOWNLOADS DO WINDOWS\n')
 						op = lerstr("VOCÊ QUER COLOCAR O DIRETORIO PARA FAZER O DOWNLOAD? ").strip().upper()
+						if op == 'S':
+							USER_PATH = lerstr("COLOQUE O DIRETORIO QUE VOCÊ QUER BAIXAR: ").strip()
 
 						if "playlist" in LINK:
 							PLAYLIST = pytubefix.Playlist(LINK)
 							print(f"Playlist encontrada: {PLAYLIST.title}")
 							for video in PLAYLIST.videos:
-								baixarplaylistmp3(video.watch_url)
+								baixarplaylistmp3(video.watch_url, op, USER_PATH)
 
 						if "youtube.com" in LINK or "youtu.be" in LINK:
 							clear()
-							baixarmp3(LINK, op)
+							baixarmp3(LINK, op, USER_PATH)
 
 				elif op == 2:
 					clear()
@@ -364,9 +369,21 @@ def main():
 						if LINK == "sair" or LINK == "SAIR" or LINK == "Sair":
 							break
 
+						print('DIGITE "S" PARA SIM OU "N" PARA NÃO\nSE VOCÊ NÃO QUISER COLOCAR, O DIRETORIO PADRÃO É NA PASTA DOWNLOADS DO WINDOWS\n')
+						op = lerstr("VOCÊ QUER COLOCAR O DIRETORIO PARA FAZER O DOWNLOAD? ").strip().upper()
+						if op == 'S':
+							USER_PATH = lerstr("COLOQUE O DIRETORIO QUE VOCÊ QUER BAIXAR: ").strip()
+
+						if "playlist" in LINK:
+
+							PLAYLIST = pytubefix.Playlist(LINK)
+							print(f"Playlist encontrada: {PLAYLIST.title}")
+							for video in PLAYLIST.videos:
+								baixarplaylistmp4(video.watch_url, op, USER_PATH)
+
 						if "youtube.com" in LINK or "youtu.be" in LINK:
 							clear()
-							baixarmp4(LINK)
+							baixarmp4(LINK, op, USER_PATH)
 
 		except Exception as e:
 			print(f"ERRO: {e}")
