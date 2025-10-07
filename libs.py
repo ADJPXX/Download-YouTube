@@ -1,5 +1,4 @@
 def verificar_pacotes(nome_pacote):
-	import os
 	try:
 		import os
 		import sys
