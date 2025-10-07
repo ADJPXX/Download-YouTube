@@ -198,18 +198,26 @@ def baixarplaylistmp3(LINK, op, USER_PATH=''):
 			print(f"OCORREU UM ERRO! TENTE NOVAMENTE {str(e)}")
 	else:
 		try:
+
 			DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "Downloads")
 			YT = YouTube(LINK)
+
+			print(f"YT: {YT}\nLINK:{LINK}\nYT.TITLE:{YT.title}")
+			input(">: ")
+
 			AUDIO = YT.streams.filter(only_audio=True).order_by('abr').desc().first()
 			AUDIO.download(DEFAULT_PATH, filename=f"{YT.title}_.mp3")
+			clear()
 
 			print("DOWNLOAD COMPLETO.")
 
+
 		except Exception as e:
-			print(f"OCORREU UM ERRO! TENTE NOVAMENTE {str(e)}")
+			print(f"OCORREU UM ERRO! TENTE NOVAMENTE {str(e)}\n")
 
 
-def baixarplaylistmp4(LINK, op, USER_PATH=''):
+
+def baixarplaylistmp4(LINK, op, ESCOLHA_RESOLUCAO, USER_PATH='',):
 	if op == 'S':
 		try:
 			import os
@@ -218,8 +226,13 @@ def baixarplaylistmp4(LINK, op, USER_PATH=''):
 
 			PATH = USER_PATH
 
-			RESOLUCOES = listaresolucoes(YT)
-			RESOLUCAO_ESCOLHIDA = escolherresolucao(RESOLUCOES)
+			if ESCOLHA_RESOLUCAO == 'S':
+				RESOLUCAO = listaresolucoes(YT)
+				RESOLUCAO_ESCOLHIDA = escolherresolucao(RESOLUCAO)
+
+			else:
+				RESOLUCAO = YT.streams.filter(only_video=True).order_by('resolution').desc().first().resolution
+				RESOLUCAO_ESCOLHIDA = RESOLUCAO
 
 			YT_VIDEO = YT.streams.filter(only_video=True, mime_type="video/mp4", res=f"{RESOLUCAO_ESCOLHIDA}").order_by(
 				'bitrate').desc().first()
@@ -266,14 +279,19 @@ def baixarplaylistmp4(LINK, op, USER_PATH=''):
 
 			DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "Downloads")
 
-			RESOLUCOES = listaresolucoes(YT)
-			RESOLUCAO_ESCOLHIDA = escolherresolucao(RESOLUCOES)
+			if ESCOLHA_RESOLUCAO == 'S':
+				RESOLUCAO = listaresolucoes(YT)
+				RESOLUCAO_ESCOLHIDA = escolherresolucao(RESOLUCAO)
+
+			else:
+				RESOLUCAO = YT.streams.filter(only_video=True).order_by('resolution').desc().first().resolution
+				RESOLUCAO_ESCOLHIDA = RESOLUCAO
 
 			YT_VIDEO = YT.streams.filter(only_video=True, mime_type="video/mp4", res=f"{RESOLUCAO_ESCOLHIDA}").order_by(
 				'bitrate').desc().first()
 
 			if YT_VIDEO is None:
-				YT_VIDEO = YT.streams.filter(only_video=True, res=RESOLUCAO_ESCOLHIDA).order_by(
+				YT_VIDEO = YT.streams.filter(only_video=True, res=f"{RESOLUCAO_ESCOLHIDA}").order_by(
 					'bitrate').desc().first()
 
 			if YT_VIDEO is None:
@@ -354,7 +372,7 @@ def main():
 							PLAYLIST = pytubefix.Playlist(LINK)
 							print(f"Playlist encontrada: {PLAYLIST.title}")
 							for video in PLAYLIST.videos:
-								baixarplaylistmp3(video.watch_url, op, USER_PATH)
+								baixarplaylistmp3(video.watch_url.strip(), op, USER_PATH)
 
 						if "youtube.com" in LINK or "youtu.be" in LINK:
 							clear()
@@ -366,7 +384,7 @@ def main():
 						print("DIGITE 'SAIR' PARA PARAR O PROGRAMA")
 						LINK = lerstr("DIGITE O LINK DO VÍDEO, SHORTS, PLAYLIST QUE VOCÊ QUER BAIXAR: ").strip()
 						clear()
-						if LINK == "sair" or LINK == "SAIR" or LINK == "Sair":
+						if LINK == "SAIR" or LINK == "Sair" or LINK == "sair":
 							break
 
 						print('DIGITE "S" PARA SIM OU "N" PARA NÃO\nSE VOCÊ NÃO QUISER COLOCAR, O DIRETORIO PADRÃO É NA PASTA DOWNLOADS DO WINDOWS\n')
@@ -375,13 +393,20 @@ def main():
 							USER_PATH = lerstr("COLOQUE O DIRETORIO QUE VOCÊ QUER BAIXAR: ").strip()
 
 						if "playlist" in LINK:
-
 							PLAYLIST = pytubefix.Playlist(LINK)
 							print(f"Playlist encontrada: {PLAYLIST.title}")
-							for video in PLAYLIST.videos:
-								baixarplaylistmp4(video.watch_url, op, USER_PATH)
 
-						if "youtube.com" in LINK or "youtu.be" in LINK:
+							print('DIGITE "S" PARA SIM OU "N" PARA NÃO. SE ESCOLHER "NÃO" OS VÍDEOS VÃO SER BAIXADOS NA MELHOR QUALIDADE POSSÍVEL')
+							ESCOLHA_RESOLUCAO = lerstr("VOCÊ QUER ESCOLHER A RESOLUÇÃO PARA CADA VÍDEO DESSA PLAYLIST?").strip().upper()
+
+							for video in PLAYLIST.videos:
+								try:
+									baixarplaylistmp4(video.watch_url.strip(), op, ESCOLHA_RESOLUCAO, USER_PATH)
+								except:
+									print(f"Erro ao baixar o vídeo: {video.title}")
+									input(">: ")
+
+						elif "youtube.com" in LINK or "youtu.be" in LINK:
 							clear()
 							baixarmp4(LINK, op, USER_PATH)
 
@@ -390,6 +415,7 @@ def main():
 
 		else:
 			pass
+		break
 
 
 if __name__ == "__main__":
