@@ -85,7 +85,10 @@ def baixarmp4(LINK, op, USER_PATH=''):
 
 			video_input = ffmpeg.input(VIDEO_FILE)
 			audio_input = ffmpeg.input(AUDIO_FILE)
-			output_file = f"{PATH}/{NOVO_TITULO}.mp4"
+
+			cont = 1
+
+			output_file = f"{PATH}{cont}- {NOVO_TITULO}.mp4"
 
 			ffmpeg.output(video_input, audio_input, output_file, vcodec='hevc_nvenc', acodec='aac', preset='p7',
 						  strict='experimental').run(overwrite_output=True)
@@ -98,7 +101,8 @@ def baixarmp4(LINK, op, USER_PATH=''):
 			os.remove(f"{PATH}/audio.mp4")
 
 		except Exception as e:
-			print(f"OCORREU UM ERRO! TENTE NOVAMENTE {str(e)}")
+			print(f'OCORREU UM ERRO NA FUNÇÃO "baixarmp4" TENTE NOVAMENTE {str(e)}')
+			input("> ")
 
 	else:
 		try:
@@ -132,7 +136,10 @@ def baixarmp4(LINK, op, USER_PATH=''):
 
 			video_input = ffmpeg.input(VIDEO_FILE)
 			audio_input = ffmpeg.input(AUDIO_FILE)
-			output_file = f"{DEFAULT_PATH}/{NOVO_TITULO}.mp4"
+
+			cont = 1
+			output_file = f"{DEFAULT_PATH}/{cont}- {NOVO_TITULO}.mp4"
+
 
 			ffmpeg.output(video_input, audio_input, output_file, vcodec='hevc_nvenc', acodec='aac', preset='p7', strict='experimental').run(overwrite_output=True)
 
@@ -144,7 +151,8 @@ def baixarmp4(LINK, op, USER_PATH=''):
 			os.remove(f"{DEFAULT_PATH}/audio.mp4")
 
 		except Exception as e:
-			print(f"OCORREU UM ERRO! TENTE NOVAMENTE {str(e)}")
+			print(f'OCORREU UM ERRO NA FUNÇÃO "baixarmp4" TENTE NOVAMENTE {str(e)}')
+			input("> ")
 
 
 def removercaracteresinvalidos(nome):
@@ -158,29 +166,35 @@ def removercaracteresinvalidos(nome):
 def baixarmp3(LINK, op, USER_PATH=''):
 	import os
 
-	clear()
 	if op == 'S':
 		try:
 			PATH = USER_PATH
 			YT = YouTube(LINK)
 			AUDIO = YT.streams.filter(only_audio=True).order_by('abr').desc().first()
-			AUDIO.download(PATH, filename=f"{YT.title}.mp3")
+			cont = 1
+			AUDIO.download(PATH, filename=f"{cont}- {YT.title}.mp3")
+			cont += 1
 
 			print("DOWNLOAD COMPLETO.")
 
 		except Exception as e:
-			print(f"OCORREU UM ERRO! TENTE NOVAMENTE {str(e)}")
+			print(f'OCORREU UM ERRO NA FUNÇÃO "baixarmp3" TENTE NOVAMENTE {str(e)}')
+			input("> ")
 	else:
 		try:
 			DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "Downloads")
 			YT = YouTube(LINK)
 			AUDIO = YT.streams.filter(only_audio=True).order_by('abr').desc().first()
-			AUDIO.download(DEFAULT_PATH, filename=f"{YT.title}.mp3")
+
+			cont = 1
+			AUDIO.download(DEFAULT_PATH, filename=f"{cont}- {YT.title}.mp3")
+
 
 			print("DOWNLOAD COMPLETO.")
 
 		except Exception as e:
-			print(f"OCORREU UM ERRO! TENTE NOVAMENTE {str(e)}")
+			print(f'OCORREU UM ERRO NA FUNÇÃO "baixarmp3" TENTE NOVAMENTE {str(e)}')
+			input("> ")
 
 
 def baixarplaylistmp3(LINK, op, USER_PATH=''):
@@ -189,32 +203,33 @@ def baixarplaylistmp3(LINK, op, USER_PATH=''):
 		try:
 			PATH = USER_PATH
 			YT = YouTube(LINK)
-			AUDIO = YT.streams.filter(only_audio=True).order_by('abr').desc().first()
-			AUDIO.download(PATH, filename=f"{YT.title}_.mp3")
-
-			print("DOWNLOAD COMPLETO.")
-
-		except Exception as e:
-			print(f"OCORREU UM ERRO! TENTE NOVAMENTE {str(e)}")
-	else:
-		try:
-
-			DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "Downloads")
-			YT = YouTube(LINK)
-
-			print(f"YT: {YT}\nLINK:{LINK}\nYT.TITLE:{YT.title}")
-			input(">: ")
 
 			AUDIO = YT.streams.filter(only_audio=True).order_by('abr').desc().first()
-			AUDIO.download(DEFAULT_PATH, filename=f"{YT.title}_.mp3")
+			AUDIO.download(PATH, filename=f"{cont}- {YT.title}_.mp3")
+
 			clear()
 
 			print("DOWNLOAD COMPLETO.")
 
+		except Exception as e:
+			print(f'OCORREU UM ERRO NA FUNÇÃO "baixarplaylistmp3" TENTE NOVAMENTE {str(e)}')
+			input("> ")
+
+	else:
+		try:
+			DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "Downloads")
+			YT = YouTube(LINK)
+
+			AUDIO = YT.streams.filter(only_audio=True).order_by('abr').desc().first()
+			AUDIO.download(DEFAULT_PATH, filename=f"{cont}- {YT.title}_.mp3")
+
+			clear()
+
+			print("DOWNLOAD COMPLETO.")
 
 		except Exception as e:
-			print(f"OCORREU UM ERRO! TENTE NOVAMENTE {str(e)}\n")
-
+			print(f'OCORREU UM ERRO NA FUNÇÃO "baixarplaylistmp3" TENTE NOVAMENTE {str(e)}')
+			input("> ")
 
 
 def baixarplaylistmp4(LINK, op, ESCOLHA_RESOLUCAO, USER_PATH='',):
@@ -257,7 +272,9 @@ def baixarplaylistmp4(LINK, op, ESCOLHA_RESOLUCAO, USER_PATH='',):
 
 			video_input = ffmpeg.input(VIDEO_FILE)
 			audio_input = ffmpeg.input(AUDIO_FILE)
-			output_file = f"{PATH}/{NOVO_TITULO}.mp4"
+
+			output_file = f"{PATH}/{cont}- {NOVO_TITULO}.mp4"
+
 
 			ffmpeg.output(video_input, audio_input, output_file, vcodec='hevc_nvenc', acodec='aac', preset='p7',
 						  strict='experimental').run(overwrite_output=True)
@@ -270,7 +287,8 @@ def baixarplaylistmp4(LINK, op, ESCOLHA_RESOLUCAO, USER_PATH='',):
 			os.remove(f"{PATH}/audio.mp4")
 
 		except Exception as e:
-			print(f"OCORREU UM ERRO! TENTE NOVAMENTE {str(e)}")
+			print(f'OCORREU UM ERRO NA FUNÇÃO "baixarplaylistmp4" TENTE NOVAMENTE {str(e)}')
+			input("> ")
 	else:
 		try:
 			import os
@@ -310,7 +328,9 @@ def baixarplaylistmp4(LINK, op, ESCOLHA_RESOLUCAO, USER_PATH='',):
 
 			video_input = ffmpeg.input(VIDEO_FILE)
 			audio_input = ffmpeg.input(AUDIO_FILE)
-			output_file = f"{DEFAULT_PATH}/{NOVO_TITULO}.mp4"
+
+			output_file = f"{DEFAULT_PATH}/{cont}- {NOVO_TITULO}.mp4"
+
 
 			ffmpeg.output(video_input, audio_input, output_file, vcodec='hevc_nvenc', acodec='aac', preset='p7',
 						  strict='experimental').run(overwrite_output=True)
@@ -323,7 +343,8 @@ def baixarplaylistmp4(LINK, op, ESCOLHA_RESOLUCAO, USER_PATH='',):
 			os.remove(f"{DEFAULT_PATH}/audio.mp4")
 
 		except Exception as e:
-			print(f"OCORREU UM ERRO! TENTE NOVAMENTE {str(e)}")
+			print(f'OCORREU UM ERRO NA FUNÇÃO "baixarplaylistmp4" TENTE NOVAMENTE {str(e)}')
+			input("> ")
 
 
 def main():
@@ -359,6 +380,9 @@ def main():
 						print("DIGITE 'SAIR' PARA PARAR O PROGRAMA")
 						LINK = lerstr("DIGITE O LINK DO VÍDEO, SHORTS OU PLAYLIST QUE VOCÊ QUER BAIXAR: ").strip()
 
+						global cont
+						cont = 0
+
 						clear()
 						if LINK == "sair" or LINK == "SAIR" or LINK == "Sair":
 							break
@@ -371,16 +395,21 @@ def main():
 						if "playlist" in LINK:
 							PLAYLIST = pytubefix.Playlist(LINK)
 							print(f"Playlist encontrada: {PLAYLIST.title}")
+
 							for video in PLAYLIST.videos:
+								cont += 1
 								baixarplaylistmp3(video.watch_url.strip(), op, USER_PATH)
 
-						if "youtube.com" in LINK or "youtu.be" in LINK:
+						if ("youtube.com" in LINK or "youtu.be" in LINK) and ("playlist" not in LINK):
 							clear()
 							baixarmp3(LINK, op, USER_PATH)
 
 				elif op == 2:
 					clear()
 					while True:
+
+						cont = 0
+
 						print("DIGITE 'SAIR' PARA PARAR O PROGRAMA")
 						LINK = lerstr("DIGITE O LINK DO VÍDEO, SHORTS, PLAYLIST QUE VOCÊ QUER BAIXAR: ").strip()
 						clear()
@@ -400,21 +429,20 @@ def main():
 							ESCOLHA_RESOLUCAO = lerstr("VOCÊ QUER ESCOLHER A RESOLUÇÃO PARA CADA VÍDEO DESSA PLAYLIST?").strip().upper()
 
 							for video in PLAYLIST.videos:
-								try:
-									baixarplaylistmp4(video.watch_url.strip(), op, ESCOLHA_RESOLUCAO, USER_PATH)
-								except:
-									print(f"Erro ao baixar o vídeo: {video.title}")
-									input(">: ")
+								cont += 1
+								baixarplaylistmp4(video.watch_url.strip(), op, ESCOLHA_RESOLUCAO, USER_PATH)
 
-						elif "youtube.com" in LINK or "youtu.be" in LINK:
+						if ("youtube.com" in LINK or "youtu.be" in LINK) and ("playlist" not in LINK):
 							clear()
 							baixarmp4(LINK, op, USER_PATH)
 
 		except Exception as e:
-			print(f"ERRO: {e}")
+			print(f'OCORREU UM ERRO NA FUNÇÃO "main" TENTE NOVAMENTE {str(e)}')
+			input("> ")
 
 		else:
 			pass
+
 		break
 
 
